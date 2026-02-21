@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>খুলনা ইফতার ট্র্যাকার ২০২৬</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap');
+        body {
+            font-family: 'Hind Siliguri', sans-serif;
+            background-color: #f8fafc;
+        }
+        .card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        .disabled-btn {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+            filter: grayscale(1);
+        }
+        #addFormModal {
+            backdrop-filter: blur(8px);
+        }
+        .comments-box {
+            max-height: 200px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #15803d 0%, #166534 100%);
+        }
+    </style>
+</head>
+<body class="text-gray-900">
+
+    <!-- হেডার -->
+    <header class="gradient-bg text-white p-6 shadow-xl sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div>
+                <h1 class="text-3xl font-black tracking-tight">🌙 খুলনা ইফতার ট্র্যাকার <span class="text-yellow-400">২০২৬</span></h1>
+                <p class="text-green-100 text-sm opacity-90">খুলনার সকল মসজিদের ইফতার ও বিরিয়ানি আপডেট</p>
+            </div>
+            <button onclick="toggleModal(true)" class="bg-yellow-400 text-green-900 px-6 py-2.5 rounded-full font-bold shadow-lg hover:bg-yellow-300 transition-all active:scale-95">
+                + নতুন তথ্য যোগ করুন
+            </button>
+        </div>
+    </header>
+
+    <!-- মূল কন্টেন্ট -->
+    <main class="max-w-4xl mx-auto p-4 space-y-8 mt-4">
+
+        <!-- সার্চ ও ফিল্টার -->
+        <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col md:flex-row gap-4">
+            <div class="relative flex-1">
+                <span class="absolute left-3 top-3 text-gray-400">🔍</span>
+                <input type="text" id="searchInput" onkeyup="searchMosque()" placeholder="মসজিদ বা এলাকার নাম লিখে খুঁজুন..." class="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 transition-all">
+            </div>
+        </div>
+
+        <!-- মসজিদের লিস্ট -->
+        <div id="mosque-list" class="grid gap-6">
+            
+            <!-- ডিফল্ট ডেটা ১ -->
+            <div class="bg-white rounded-3xl shadow-sm overflow-hidden card border border-gray-100 mosque-card" data-id="default-1">
+                <div class="p-6">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-800 mosque-name leading-tight">খুলনা জেলা মডেল মসজিদ ও ইসলামিক সাংস্কৃতিক কেন্দ্র</h2>
+                            <p class="text-gray-500 font-medium">📍 বয়রা, খুলনা</p>
+                            <p class="text-xs text-gray-400 mt-2 bg-gray-100 inline-block px-2 py-1 rounded">সংযোজনকারী: অ্যাডমিন</p>
+                        </div>
+                        <span class="bg-green-100 text-green-700 text-xs font-bold px-3 py-1.5 rounded-full ring-1 ring-green-200 uppercase tracking-wider">রোজার ক্যালেন্ডার ২০২৬</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div class="bg-emerald-50 p-4 rounded-2xl border border-emerald-100">
+                            <h3 class="text-xs font-bold text-emerald-600 uppercase mb-1">ইফতারি মেনু</h3>
+                            <p class="text-lg font-bold text-emerald-900 leading-tight">🍛 ছোলা, পিয়াজু, মুড়ি, খেজুর ও শরবত</p>
+                        </div>
+                        <div class="bg-amber-50 p-4 rounded-2xl border border-amber-100">
+                            <h3 class="text-xs font-bold text-amber-600 uppercase mb-1">বিরিয়ানি স্ট্যাটাস</h3>
+                            <p class="text-lg font-bold text-amber-900 leading-tight">🍖 বিরিয়ানি: <span class="text-rose-600">নেই</span></p>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-t border-dashed pt-6">
+                        <a href="https://maps.google.com/?q=Khulna+District+Model+Mosque" target="_blank" class="inline-flex items-center text-blue-600 font-semibold hover:text-blue-800 transition">
+                            <span class="mr-2">📍</span> গুগল ম্যাপে লোকেশন দেখুন
+                        </a>
+                        <div class="flex items-center gap-2 vote-container">
+                            <button onclick="vote(this, 'sotto', 'default-1')" class="flex-1 sm:flex-none bg-green-50 text-green-700 px-5 py-2.5 rounded-xl font-bold hover:bg-green-100 transition ring-1 ring-green-200">
+                                ✅ সত্য (১২)
+                            </button>
+                            <button onclick="vote(this, 'vua', 'default-1')" class="flex-1 sm:flex-none bg-rose-50 text-rose-700 px-5 py-2.5 rounded-xl font-bold hover:bg-rose-100 transition ring-1 ring-rose-200">
+                                ❌ ভুয়া (২)
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- কমেন্ট সেকশন -->
+                    <div class="mt-8 bg-gray-50 rounded-2xl p-5">
+                        <h4 class="text-sm font-bold text-gray-700 flex items-center mb-4">
+                            <span class="mr-2">💬</span> ব্যবহারকারীদের মন্তব্য
+                        </h4>
+                        <div id="commentList-default-1" class="comments-box space-y-3 mb-4 pr-2">
+                            <div class="bg-white p-3 rounded-xl shadow-sm border border-gray-100">
+                                <p class="text-xs font-bold text-green-700 mb-1">আসিফ ইকবাল</p>
+                                <p class="text-sm text-gray-700">২০২৬ এর প্রথম রোজা এখানে অনেক ভিড় ছিল কিন্তু ম্যানেজমেন্ট খুব ভালো।</p>
+                            </div>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                <input type="text" id="commenterName-default-1" placeholder="আপনার নাম" class="p-3 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none transition-all">
+                                <input type="text" id="commentText-default-1" placeholder="আপনার মন্তব্য লিখুন..." class="md:col-span-2 p-3 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none transition-all">
+                            </div>
+                            <button onclick="addComment('default-1')" class="w-full bg-green-700 text-white py-3 rounded-xl text-sm font-bold hover:bg-green-800 transition shadow-md active:scale-95">মন্তব্য পাঠান</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- মডাল: নতুন তথ্য যোগ -->
+    <div id="addFormModal" class="fixed inset-0 bg-slate-900/60 hidden flex items-center justify-center z-[100] p-4 animate-in fade-in duration-300">
+        <div class="bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden animate-in slide-in-from-bottom-10 duration-500">
+            <div class="gradient-bg p-6 text-white flex justify-between items-center">
+                <div>
+                    <h3 class="font-black text-xl">নতুন মসজিদের তথ্য যোগ করুন</h3>
+                    <p class="text-xs text-green-100">আপনার দেওয়া তথ্য অন্যদের সাহায্য করবে</p>
+                </div>
+                <button onclick="toggleModal(false)" class="text-3xl font-light hover:rotate-90 transition-transform">&times;</button>
+            </div>
+            <form onsubmit="addNewMosque(event)" class="p-8 space-y-5">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-black text-gray-500 uppercase tracking-widest mb-1 ml-1">আপনার নাম</label>
+                        <input type="text" id="newUserName" required class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none transition-all" placeholder="নাম লিখুন">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-black text-gray-500 uppercase tracking-widest mb-1 ml-1">মসজিদের নাম</label>
+                        <input type="text" id="newMosqueName" required class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none transition-all" placeholder="উদা: নিরালা কেন্দ্রীয় জামে মসজিদ">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-black text-gray-500 uppercase tracking-widest mb-1 ml-1">এলাকা</label>
+                        <input type="text" id="newMosqueArea" required class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none transition-all" placeholder="উদা: নিরালা, খুলনা">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-black text-gray-500 uppercase tracking-widest mb-1 ml-1">ইফতারি মেনু</label>
+                            <input type="text" id="newIftar" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none" placeholder="উদা: খিচুড়ি">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-black text-gray-500 uppercase tracking-widest mb-1 ml-1">বিরিয়ানি আছে?</label>
+                            <select id="newBiryani" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none">
+                                <option value="নেই">নেই</option>
+                                <option value="আছে (কাচ্চি)">আছে (কাচ্চি)</option>
+                                <option value="আছে (তেহারি)">আছে (তেহারি)</option>
+                                <option value="আছে (মোরগ পোলাও)">আছে (মোরগ পোলাও)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="w-full gradient-bg text-white py-4 rounded-2xl font-black text-lg shadow-lg hover:shadow-green-200 transition-all active:scale-95">তথ্য জমা দিন</button>
+            </form>
+        </div>
+    </div>
+
+    <footer class="text-center p-12 text-gray-400 text-sm border-t border-gray-100 mt-12 bg-white">
+        <p class="font-bold text-gray-600 mb-1">🌙 খুলনা ইফতার ও বিরিয়ানি ট্র্যাকার ২০২৬</p>
+        <p>সতর্কবার্তা: এখানে দেওয়া তথ্যসমূহ ব্যবহারকারীদের ইনপুট অনুযায়ী। নিশ্চিত হওয়ার জন্য ম্যাপ চেক করুন।</p>
+        <div class="mt-4 flex justify-center gap-4 grayscale opacity-50">
+            <span>🕌</span> <span>🌴</span> <span>🌙</span>
+        </div>
+    </footer>
+
+    <script>
+        function toggleModal(show) {
+            const modal = document.getElementById('addFormModal');
+            modal.classList.toggle('hidden', !show);
+        }
+
+        function searchMosque() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const cards = document.getElementsByClassName('mosque-card');
+            for (let card of cards) {
+                const name = card.querySelector('.mosque-name').innerText.toLowerCase();
+                const area = card.querySelector('.font-medium').innerText.toLowerCase();
+                card.style.display = (name.includes(query) || area.includes(query)) ? "" : "none";
+            }
+        }
+
+        function addNewMosque(e) {
+            e.preventDefault();
+            const id = 'user-' + Date.now();
+            const userName = document.getElementById('newUserName').value;
+            const mosqueName = document.getElementById('newMosqueName').value;
+            const area = document.getElementById('newMosqueArea').value;
+            const iftar = document.getElementById('newIftar').value || "সাধারণ ইফতার";
+            const biryani = document.getElementById('newBiryani').value;
+            const mapUrl = `https://maps.google.com/?q=${encodeURIComponent(mosqueName + ' ' + area)}`;
+
+            const list = document.getElementById('mosque-list');
+            const card = document.createElement('div');
+            card.className = "bg-white rounded-3xl shadow-sm overflow-hidden card border border-gray-100 mosque-card animate-in zoom-in-95 duration-300";
+            card.setAttribute('data-id', id);
+            card.innerHTML = `
+                <div class="p-6">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-800 mosque-name leading-tight">${mosqueName}</h2>
+                            <p class="text-gray-500 font-medium">📍 ${area}</p>
+                            <p class="text-xs text-gray-400 mt-2 bg-gray-100 inline-block px-2 py-1 rounded">সংযোজনকারী: ${userName}</p>
+                        </div>
+                        <span class="bg-blue-50 text-blue-700 text-xs font-bold px-3 py-1.5 rounded-full ring-1 ring-blue-100 uppercase tracking-wider">নতুন সংযোজন</span>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div class="bg-emerald-50 p-4 rounded-2xl border border-emerald-100">
+                            <h3 class="text-xs font-bold text-emerald-600 uppercase mb-1">ইফতারি মেনু</h3>
+                            <p class="text-lg font-bold text-emerald-900 leading-tight">🍛 ${iftar}</p>
+                        </div>
+                        <div class="bg-amber-50 p-4 rounded-2xl border border-amber-100">
+                            <h3 class="text-xs font-bold text-amber-600 uppercase mb-1">বিরিয়ানি স্ট্যাটাস</h3>
+                            <p class="text-lg font-bold text-amber-900 leading-tight">🍖 বিরিয়ানি: <span class="${biryani === 'নেই' ? 'text-rose-600' : 'text-emerald-600'}">${biryani}</span></p>
+                        </div>
+                    </div>
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-t border-dashed pt-6">
+                        <a href="${mapUrl}" target="_blank" class="inline-flex items-center text-blue-600 font-semibold hover:text-blue-800 transition">
+                            <span class="mr-2">📍</span> গুগল ম্যাপে লোকেশন দেখুন
+                        </a>
+                        <div class="flex items-center gap-2 vote-container">
+                            <button onclick="vote(this, 'sotto', '${id}')" class="flex-1 sm:flex-none bg-green-50 text-green-700 px-5 py-2.5 rounded-xl font-bold hover:bg-green-100 transition ring-1 ring-green-200">
+                                ✅ সত্য (০)
+                            </button>
+                            <button onclick="vote(this, 'vua', '${id}')" class="flex-1 sm:flex-none bg-rose-50 text-rose-700 px-5 py-2.5 rounded-xl font-bold hover:bg-rose-100 transition ring-1 ring-rose-200">
+                                ❌ ভুয়া (০)
+                            </button>
+                        </div>
+                    </div>
+                    <div class="mt-8 bg-gray-50 rounded-2xl p-5">
+                        <h4 class="text-sm font-bold text-gray-700 flex items-center mb-4"><span class="mr-2">💬</span> মন্তব্যসমূহ</h4>
+                        <div id="commentList-${id}" class="comments-box space-y-3 mb-4 pr-2"></div>
+                        <div class="space-y-3">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                <input type="text" id="commenterName-${id}" placeholder="আপনার নাম" class="p-3 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none">
+                                <input type="text" id="commentText-${id}" placeholder="মন্তব্য লিখুন..." class="md:col-span-2 p-3 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none">
+                            </div>
+                            <button onclick="addComment('${id}')" class="w-full bg-green-700 text-white py-3 rounded-xl text-sm font-bold hover:bg-green-800 transition">মন্তব্য পাঠান</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            list.prepend(card);
+            toggleModal(false);
+            e.target.reset();
+        }
+
+        function vote(btn, type, id) {
+            if (localStorage.getItem('voted_' + id)) return;
+            let match = btn.innerText.match(/\d+/);
+            let count = match ? parseInt(match[0]) : 0;
+            count++;
+            btn.innerText = (type === 'sotto' ? `✅ সত্য (${count})` : `❌ ভুয়া (${count})`);
+            localStorage.setItem('voted_' + id, type);
+            btn.parentElement.querySelectorAll('button').forEach(b => b.classList.add('disabled-btn'));
+        }
+
+        function addComment(id) {
+            const name = document.getElementById(`commenterName-${id}`).value.trim() || "অজ্ঞাতনামা";
+            const text = document.getElementById(`commentText-${id}`).value.trim();
+            const list = document.getElementById(`commentList-${id}`);
+            if (!text) return;
+            const div = document.createElement('div');
+            div.className = "bg-white p-3 rounded-xl shadow-sm border border-gray-100 animate-in slide-in-from-left-2";
+            div.innerHTML = `<p class="text-xs font-bold text-green-700 mb-1">${name}</p><p class="text-sm text-gray-700">${text}</p>`;
+            list.appendChild(div);
+            document.getElementById(`commentText-${id}`).value = "";
+            list.scrollTop = list.scrollHeight;
+        }
+
+        window.onload = function() {
+            document.querySelectorAll('.mosque-card').forEach(card => {
+                const id = card.getAttribute('data-id');
+                if (localStorage.getItem('voted_' + id)) {
+                    card.querySelectorAll('.vote-container button').forEach(b => b.classList.add('disabled-btn'));
+                }
+            });
+        };
+    </script>
+</body>
+</html>
+
